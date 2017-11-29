@@ -30,12 +30,12 @@ class Collector<E> {
     // ID
     private CollectorId id;
 
-    private Watch.TimeId currentTime;
+    private long currentTimeId;
     private Watch watch;
     private L1LRU<E> l1LRU;
     private L2Counter<E> l2Counter;
 
-    // increase count in the window(currentTime)
+    // increase count in the window(currentTimeId)
     private long totalCount;
 
     Collector(HotspotSensor hotspotSensor, Watch watch, L1LRU<E> l1LRU, L2Counter<E> l2Counter) {
@@ -45,7 +45,7 @@ class Collector<E> {
         this.l1LRU = l1LRU;
         this.l2Counter = l2Counter;
 
-        this.currentTime = watch.currentTimeId();
+        this.currentTimeId = watch.currentTimeId();
         this.totalCount = 0;
     }
 
@@ -55,13 +55,13 @@ class Collector<E> {
 
         totalCount++;
 
-        Watch.TimeId newTimeId = watch.currentTimeId();
-        if (newTimeId.after(currentTime)) {
-            // currentTime is elapsed, submit
-            hotspotSensor.submit(id, currentTime, l2Counter.getElements(), totalCount);
+        long newTimeId = watch.currentTimeId();
+        if (newTimeId > currentTimeId) {
+            // currentTimeId is elapsed, submit
+            hotspotSensor.submit(id, currentTimeId, l2Counter.getElements(), totalCount);
 
             // reset
-            currentTime = newTimeId;
+            currentTimeId = newTimeId;
             l1LRU.clear();
             totalCount = 0;
             l2Counter.clear();

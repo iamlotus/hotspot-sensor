@@ -122,5 +122,5 @@ You can customize HotSpotSensor by customizing HotSpotSenorBuilder. Here is an e
 
 On a laptop with macOS 10.13.1, 2.3G Intel Corei7, 16GB 1600MHz DDR3. HostSpotSensor can support up to 20,000,000 QPS with above benchamrk program.
 
->stop, avg QPS=19735823
+>stop, avg QPS=20305077
 

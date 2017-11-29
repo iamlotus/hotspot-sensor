@@ -35,7 +35,7 @@ public class HotspotSensorTest {
 
         ExecutorService es = Executors.newFixedThreadPool(2);
 
-        Watch.TimeId startTime = d.getWatch().currentTimeId();
+        long startTime = d.getWatch().currentTimeId();
         es.submit(() -> {
             // a=2(L2)+1(L1) b=1(L2)+1(L1)
             d.submit(Collector.CollectorId.next(), startTime, TestUtils.list(TestUtils.e("a", 2), TestUtils.e("b", 1)),
@@ -48,7 +48,7 @@ public class HotspotSensorTest {
             }
 
             // a=1(L2)+1(L1) c=2(L2)+1(L1)
-            d.submit(Collector.CollectorId.next(), startTime.next(),
+            d.submit(Collector.CollectorId.next(), startTime + 1,
                 TestUtils.list(TestUtils.e("a", 1), TestUtils.e("c", 2)), 3);
         });
 
@@ -63,17 +63,14 @@ public class HotspotSensorTest {
             }
 
             // b=1(L2)+1(L1) c=1(L2)+1(L1)
-            d.submit(Collector.CollectorId.next(), startTime.next(),
+            d.submit(Collector.CollectorId.next(), startTime + 1,
                 TestUtils.list(TestUtils.e("b", 1), TestUtils.e("c", 1)), 1);
 
         });
 
         // trigger calculate
         // sum(a)= 5, sum(b)=2
-        Watch.TimeId newEpisode = startTime;
-        for (int i = 0; i < windowsNum; i++) {
-            newEpisode = newEpisode.next();
-        }
+        long newEpisode = startTime + windowsNum;
 
         try {
             TimeUnit.MILLISECONDS.sleep(windowSizeMills * windowsNum);
@@ -113,20 +110,17 @@ public class HotspotSensorTest {
 
         Collector.CollectorId id = Collector.CollectorId.next();
         Watch watch = d.getWatch();
-        Watch.TimeId now = watch.currentTimeId();
+        long now = watch.currentTimeId();
         // a=2(L2)+1(L1) b=1(L2)+1(L1)
         d.submit(id, now, TestUtils.list(TestUtils.e("a", 2), TestUtils.e("b", 1)), 10);
 
         // a=1(L2)+1(L1)
-        Watch.TimeId nextTime = now.next();
+        long nextTime = now + 1;
         d.submit(id, nextTime, list(TestUtils.e("a", 1)), 20);
 
         // trigger calculate
         // sum(a)= 5, sum(b)=2
-        Watch.TimeId newEpisode = now;
-        for (int i = 0; i < windowsNum; i++) {
-            newEpisode = newEpisode.next();
-        }
+        long newEpisode = now + windowsNum;
 
         d.submit(id, newEpisode, TestUtils.list(), 10);
 
@@ -166,8 +160,7 @@ public class HotspotSensorTest {
         Collector.CollectorId collectorId1 = Collector.CollectorId.next();
         Collector.CollectorId collectorId2 = Collector.CollectorId.next();
         Watch w = new Watch(10);
-        Watch.TimeId timeId1 = w.currentTimeId();
-        Watch.TimeId timeId2 = timeId1.next();
+        long timeId1 = w.currentTimeId();
 
 
         Assert.assertTrue(serverWindow.merge(collectorId1, timeId1, list(TestUtils.e("a", 1)), 10));

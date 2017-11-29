@@ -57,72 +57,8 @@ public class Watch {
      *
      * @return TimeId, 0-based
      */
-    public TimeId currentTimeId() {
-        return new TimeId((currentTimeMillis - startTimeMillis) / windowSizeMills);
-    }
-
-
-    public static class TimeId {
-
-        private long value;
-
-        TimeId(long value) {
-            if (value < 0) {
-                throw new IllegalArgumentException("value must be non-positive");
-            }
-            this.value = value;
-        }
-
-        public TimeId next() {
-            return new TimeId(value + 1);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof TimeId)) {
-                return false;
-            }
-
-            TimeId that = (TimeId) o;
-
-            return value == that.value;
-
-        }
-
-
-        public long value() {
-            return this.value;
-        }
-
-        public long minus(TimeId another) {
-            return value - another.value;
-        }
-
-
-        public boolean after(TimeId another) {
-            return value > another.value;
-        }
-
-        public boolean before(TimeId another) {
-            return value < another.value;
-        }
-
-
-        @Override
-        public int hashCode() {
-            int result = (int) (value ^ (value >>> 32));
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "T[" + value +
-                "]";
-        }
-
+    public long currentTimeId() {
+        return (currentTimeMillis - startTimeMillis) / windowSizeMills;
     }
 
 

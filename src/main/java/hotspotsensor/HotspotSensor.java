@@ -27,7 +27,7 @@ public class HotspotSensor<T> {
     private int hotThreshold;
     private ServerWindow[] windows;
     private int firstWindowNo;
-    private Watch.TimeId firstWindowTimeId;
+    private long firstWindowTimeId;
     private List<NotificationHandler<T>> notificationHandlers;
     private ServerCounter<T> serverCounter;
     private Set<T> hotElementSet;
@@ -101,7 +101,7 @@ public class HotspotSensor<T> {
         return watch;
     }
 
-    boolean submit(Collector.CollectorId collectorId, Watch.TimeId timeId, List<Entry<T>> l2Counter, long totalCount) {
+    boolean submit(Collector.CollectorId collectorId, long timeId, List<Entry<T>> l2Counter, long totalCount) {
         ClientMessage<T> clientMessage = new ClientMessage(collectorId, timeId, l2Counter, totalCount);
         if (!channel.add(clientMessage)) {
             LOG.warn("hot detect, server channel overflow, discard client {}, timeId {}", collectorId, timeId);
@@ -202,7 +202,7 @@ public class HotspotSensor<T> {
             totalCount = 0;
         }
 
-        public boolean merge(Collector.CollectorId collectorId, Watch.TimeId timeId, List<Entry<E>> clientCounter,
+        public boolean merge(Collector.CollectorId collectorId, long timeId, List<Entry<E>> clientCounter,
             long totalCount) {
             if (collectorIds.contains(collectorId)) {
                 // one client should not submit twice;
@@ -245,13 +245,13 @@ public class HotspotSensor<T> {
     private static class ClientMessage<T> {
         private Collector.CollectorId collectorId;
 
-        private Watch.TimeId timeId;
+        private long timeId;
 
         private List<Entry<T>> l2Counter;
 
         private long totalCount;
 
-        public ClientMessage(Collector.CollectorId collectorId, Watch.TimeId timeId, List<Entry<T>> l2Counter,
+        public ClientMessage(Collector.CollectorId collectorId, long timeId, List<Entry<T>> l2Counter,
             long totalCount) {
             this.collectorId = collectorId;
             this.timeId = timeId;
@@ -263,7 +263,7 @@ public class HotspotSensor<T> {
             return collectorId;
         }
 
-        public Watch.TimeId getTimeId() {
+        public long getTimeId() {
             return timeId;
         }
 
@@ -344,10 +344,10 @@ public class HotspotSensor<T> {
 
                 try {
                     ClientMessage<T> packet = channel.take();
-                    Watch.TimeId timeId = packet.getTimeId();
+                    long timeId = packet.getTimeId();
                     Collector.CollectorId collectorId = packet.getCollectorId();
 
-                    int offset = (int) timeId.minus(firstWindowTimeId);
+                    int offset = (int) (timeId - firstWindowTimeId);
 
                     if (offset < 0) {
                         // out-of-date package, discard

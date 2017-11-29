@@ -38,7 +38,7 @@ public class CollectorTest {
         Collector<String> collector =
             new Collector<>(hotspotSensor, watch, new SimpleL1LRU<>(l1Capacity), new SimpleL2Counter<>(l2Capacity));
         CollectorId collectorId = collector.getId();
-        Watch.TimeId startTime = watch.currentTimeId();
+        long startTime = watch.currentTimeId();
 
 
         expect(hotspotSensor.submit(
