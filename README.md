@@ -12,18 +12,19 @@ Use ThreadLocal counter for each thread, another consumer thread is responsible 
 
 ```java
 
-	// build sensor and pass it to all workers threads
-	HotspotSensor<String> sensor = HotspotSensor.<String>builder()
-											.addNotificationHandler(new MBeanNotificationHandler<>()
-											.build();
-	
-	// in worker thread 1, increase the count of some elements;
-	sensor.increase("AAAA"); 
-	sensor.increase("BBBB"); 
-	
-	// in worker thread n, increase the count of some elements;
-	sensor.increase("AAAA"); 
-	sensor.increase("ABCD"); 
+    // build sensor and pass it to all workers threads
+    HotspotSensor<String> sensor =
+        HotspotSensor.<String>builder()
+            .addNotificationHandler(new MBeanNotificationHandler<>()
+            .build();
+    
+    // in worker thread 1, increase the count of some elements;
+    sensor.increase("AAAA"); 
+    sensor.increase("BBBB"); 
+    
+    // in worker thread n, increase the count of some elements;
+    sensor.increase("AAAA"); 
+    sensor.increase("ABCD"); 
 ```
 That is all. You can see hot elements from JMX (under **hotspotsensor** folder) when the program is running
 
@@ -78,19 +79,19 @@ You can customize HotSpotSensor by customizing HotSpotSenorBuilder. Here is an e
 
 
 
-        HotspotSensor<String> sensor = HotspotSensor.<String>builder().setWindowsNumber(windowsNum)
-                                                                      .setWindowSizeMills(windowSizeMills)
-                                                                      .setHotThreshold(hotThreshold)
-                                                                      .setChannelSize(channelSize)
-                                                                      .setL1Capacity(l1Capacity)
-                                                                      .setL2Capacity(l2Capacity)
-                                                                      // view notification detail by
-                                                                      // jvisualvm or jconsole
-                                                                      .addNotificationHandler(
-                                                                          new MBeanNotificationHandler<>())
-                                                                      // log QPS and hot
-                                                                      .addNotificationHandler(logHandler)
-                                                                      .build();
+        HotspotSensor<String> sensor =
+            HotspotSensor.<String>builder().setWindowsNumber(windowsNum)
+                .setWindowSizeMills(windowSizeMills)
+                .setHotThreshold(hotThreshold)
+                .setChannelSize(channelSize)
+                .setL1Capacity(l1Capacity)
+                .setL2Capacity(l2Capacity)
+                // view notification detail by
+                // jvisualvm or jconsole
+                .addNotificationHandler(new MBeanNotificationHandler<>())
+                // log QPS and hot
+                .addNotificationHandler(logHandler)
+                .build();
 
 
 
