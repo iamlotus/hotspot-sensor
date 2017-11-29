@@ -1,40 +1,24 @@
-# hotspot-sensor
+package hotspotsensor.benchmark;
 
-A high-performance lib  to detect hotspot in high-concurrency environment.
+import hotspotsensor.HotspotSensor;
+import hotspotsensor.MBeanNotificationHandler;
+import hotspotsensor.NotificationHandler;
+import hotspotsensor.TestUtils;
 
-## Introduction
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-Use ThreadLocal counter for each thread, another consumer thread is responsible for detect hotspot, this is a lock-less structure.
+/**
+ * @author lotus.jzx
+ */
+public class BenchmarkMain {
 
-## Usage
-
-### Quick start
-
-```java
-
-	// build sensor and pass it to all workers threads
-	HotspotSensor<String> sensor = HotspotSensor.<String>builder()
-											.addNotificationHandler(new MBeanNotificationHandler<>()
-											.build();
-	
-	// in worker thread 1, increase the count of some elements;
-	sensor.increase("AAAA"); 
-	sensor.increase("BBBB"); 
-	
-	// in worker thread n, increase the count of some elements;
-	sensor.increase("AAAA"); 
-	sensor.increase("ABCD"); 
-```
-That is all. You can see hot elements from JMX (under **hotspotsensor** folder) when the program is running
-
-![img](doc/jmx.png)
-
-### Advantage usage
-
-You can customize HotSpotSensor by customizing HotSpotSenorBuilder. Here is an example which run benchmark, you can find it on test/java/hostspotsensor/BenchmarkMain.
-
-```java
- public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         // 50 threads do increase operation
         int threadNum = 50;
 
@@ -116,11 +100,4 @@ You can customize HotSpotSensor by customizing HotSpotSenorBuilder. Here is an e
         es.awaitTermination(10, TimeUnit.SECONDS);
         System.out.println("stop, avg QPS=" + sumQps.get() / times.get());
     }
-```
-
-## Performance
-
-On a laptop with macOS 10.13.1, 2.3G Intel Corei7, 16GB 1600MHz DDR3. HostSpotSensor can support up to 20,000,000 QPS with above benchamrk program.
-
->stop, avg QPS=19735823
-
+}
